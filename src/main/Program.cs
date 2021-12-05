@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using importable.stdlib;
 
 namespace main
 {
@@ -18,19 +19,8 @@ namespace main
         }
     }
 
-    enum SyntaxTypes
+    class HelperMethods
     {
-        and = 0x00,
-        or = 0x01,
-        nor = 0x02
-    }
-
-    class Compiler
-    {
-        static string[] code;
-        static List<string> stack = new List<string>();
-        
-        
         public static string stringBetweenChars(string input, char charFrom, char charTo) {
         int posFrom = input.IndexOf(charFrom);
         if (posFrom != -1) { // if found char
@@ -50,6 +40,12 @@ namespace main
             return true;
         return false;
         }
+    }
+
+    class Compiler
+    {
+        static string[] code;
+        public static List<string> stack = new List<string>();
 
         public static void Compile(string input) {
             Locate(input);
@@ -57,7 +53,7 @@ namespace main
 
         static void Locate(string input) {
             try {
-                if(IsTextFileEmpty(input)) {
+                if(HelperMethods.IsTextFileEmpty(input)) {
                     Error.throwWarning(1);
                 }
                 code = File.ReadAllLines(input);
@@ -69,6 +65,15 @@ namespace main
                 return;
             }
         }
+
+        static void Parser(string[] input) {
+            string[] line;
+            for(int i = 0; i == input.Length; i++) {
+                line = input[i].Split(' ');
+                string operand = line[i].ToLower();
+                
+            }
+        } 
     }
 
 
