@@ -1,0 +1,4 @@
+.main
+dis "Hello, world!
+        inx
+    end
