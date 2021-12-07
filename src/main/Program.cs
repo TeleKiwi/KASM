@@ -45,7 +45,8 @@ namespace main
     {
         
         static string[] code;
-
+        public static string[] registers = new string[4];
+        public static string[] ram = new string[64];
         public static List<string> stack = new List<string>();
 
         public static int i;
@@ -82,10 +83,21 @@ namespace main
                     case "pop":
                         Commands.pop();
                         break;
-                    case ";" or "":
-                    {
+                    case ";" or "": {
                         break;
                     }
+                    case "mw":
+                        Commands.mw(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        break;
+                    case "lw":
+                        Commands.lw(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        break;
+                    case "sw":
+                        Commands.sw(currentLine.Split(' ')[1], currentLine.Split(' ')[2], Int16.Parse(currentLine.Split(' ')[3]));
+                        break;
+                    case "lda":
+                        Commands.lda(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        break;
                     default:
                         Error.throwError(5, i);
                         break;
@@ -98,6 +110,7 @@ namespace main
 
     class Commands
     {
+        // pushes input to stack
         public static void push(string item) {
             if(Compiler.stack.Count <= 256) {
                 Compiler.stack.Add(item);
@@ -107,6 +120,7 @@ namespace main
             
         }
 
+        // pops first input off stack
         public static void pop() {
             try {
                 Compiler.stack.RemoveAt(0);
@@ -114,6 +128,39 @@ namespace main
                 Error.throwError(9, Compiler.i);
             }
             
+        }
+
+        // moves data from 1 register to another
+        public static void mw(string donor, string recipient) {
+            int reg1 = Int16.Parse(donor);
+            int reg2 = Int16.Parse(recipient);
+
+            Compiler.registers[reg2] = Compiler.registers[reg1];
+            Compiler.registers[reg1] = "";
+        }
+
+        // loads data from place in ram to register
+        public static void lw(string placeInRAM, string recipient)  {
+            int reg = Int16.Parse(recipient);
+            int donor = Int16.Parse(placeInRAM);
+
+            Compiler.registers[reg] = Compiler.ram[donor];
+        }
+
+        // stores register's content into ram at address, optionally clears the register
+        public static void sw(string destination, string donor, int clearReg) {
+            int reg = Int16.Parse(donor);
+            int destInRAM = Int16.Parse(destination);
+
+            Compiler.ram[destInRAM] = Compiler.registers[reg];
+            if(clearReg == 0) {Compiler.registers[reg] = "";}
+        }
+
+        // loads input into ram
+        public static void lda(string destination, string input) {
+            int destInRAM = Int16.Parse(destination);
+
+            Compiler.ram[destInRAM] = input;
         }
 
     }

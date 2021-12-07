@@ -1,11 +1,7 @@
-push 10
-pop
-push 20
-pop 
-push 15
-push 30
-pop
-
-; comments look like this
-; the space is important, otherwise it wont work
-; so yeah
+; load into ram
+lda 0 16
+; into reg, shuffle a bit, out of reg
+lw 0 0
+mw 0 1
+mw 1 3
+sw 3 25
