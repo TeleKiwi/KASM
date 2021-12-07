@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using importable.stdlib;
 
 namespace main
 {
@@ -44,44 +43,90 @@ namespace main
 
     class Compiler
     {
+        
         static string[] code;
+
         public static List<string> stack = new List<string>();
+
+        public static int i;
 
         public static void Compile(string input) {
             Locate(input);
+            Parser(code);
         }
 
         static void Locate(string input) {
             try {
                 if(HelperMethods.IsTextFileEmpty(input)) {
-                    Error.throwWarning(1);
+                    Error.throwError(7, 0);
                 }
                 code = File.ReadAllLines(input);
                 if(Path.GetExtension(input) != ".kasm") {
-                    Error.throwError(2);
+                    Error.throwError(2, 0);
                 }
             } catch(System.Exception)  {
-                Error.throwError(1);
+                Error.throwError(1, 0);
                 return;
             }
         }
 
         static void Parser(string[] input) {
-            string[] line;
-            for(int i = 0; i == input.Length; i++) {
-                line = input[i].Split(' ');
-                string operand = line[i].ToLower();
-                
+            stack.Clear();
+            i = 1;
+            foreach(string currentLine in input) {
+                Console.WriteLine(currentLine);
+                string opcode = currentLine.Split(' ')[0];
+                Console.WriteLine(opcode);
+                switch(opcode) {
+                    case "push":
+                        Commands.push(currentLine.Split(' ')[1]);
+                        break;
+                    case "pop":
+                        Commands.pop();
+                        break;
+                    default:
+                        Error.throwError(5, i);
+                        break;
+                    
+                }
+                i++;
             }
         } 
+    }
+
+    class Commands
+    {
+        public static void push(string item) {
+            if(Compiler.stack.Count <= 256) {
+                Compiler.stack.Add(item);
+            } else {
+                Error.throwError(8, Compiler.i);
+            }
+            
+        }
+
+        public static void pop() {
+            try {
+                Compiler.stack.RemoveAt(0);
+            } catch(System.Exception) {
+                Error.throwError(9, Compiler.i);
+            }
+            
+        }
+
     }
 
 
     class Error
     {
-        public static void throwError(int errorCode) {
+        public static void throwError(int errorCode, int lineNumber) {
             Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.Write("FATAL ERROR: ");
+            if(lineNumber != 0) {
+                Console.Write($"FATAL ERROR ON LINE {lineNumber}: ");
+            } else {
+                Console.Write("FATAL ERROR: ");
+            }
+            
             Console.ForegroundColor = ConsoleColor.White;
             switch(errorCode) {
                 case 1:
@@ -102,6 +147,15 @@ namespace main
                 case 6:
                     Console.WriteLine("procedure is missing 'end' keyword.");
                     break;
+                case 7:
+                    Console.WriteLine("the file linked is empty. double check you have the right file?");
+                    break;
+                case 8:
+                    Console.WriteLine("the stack has a maximum size of 256.");
+                    break;
+                case 9:
+                    Console.WriteLine("the stack is empty; nothing to pop.");
+                    break;
 
             }
             Console.WriteLine($"process halted with error code {errorCode}.");
@@ -113,12 +167,6 @@ namespace main
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.Write("WARNING: ");
             Console.ForegroundColor = ConsoleColor.White;
-            switch(warningCode) {
-                case 1:
-                    Console.WriteLine("the file linked is empty. double check you have the right file?");
-                    break;
-
-            }
             Console.WriteLine($"program will continue execution. warning code {warningCode}.");
         }
 
