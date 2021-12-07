@@ -5,4 +5,7 @@ pop
 push 15
 push 30
 pop
-obviously invalid
+
+; comments look like this
+; the space is important, otherwise it wont work
+; so yeah

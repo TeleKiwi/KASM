@@ -74,9 +74,7 @@ namespace main
             stack.Clear();
             i = 1;
             foreach(string currentLine in input) {
-                Console.WriteLine(currentLine);
                 string opcode = currentLine.Split(' ')[0];
-                Console.WriteLine(opcode);
                 switch(opcode) {
                     case "push":
                         Commands.push(currentLine.Split(' ')[1]);
@@ -84,6 +82,10 @@ namespace main
                     case "pop":
                         Commands.pop();
                         break;
+                    case ";" or "":
+                    {
+                        break;
+                    }
                     default:
                         Error.throwError(5, i);
                         break;
