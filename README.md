@@ -24,7 +24,7 @@ Instead of directly communicating with the computer, this language is interprete
 
 First, make sure your computer can execute C# code. Download .NET Core from Microsoft's website, then open a command prompt and navigate to a folder of your choosing. Then, run;
 
-`git clone https://github.com/TeleKiwi/KASM/wiki.git`
+`git clone https://github.com/TeleKiwi/KASM.git`
 
 Still in the command prompt, navigate to src/main. Then, run;
 
