@@ -10,3 +10,8 @@ lda 1 17
 lw 1 a
 sub a 16
 ; now 1 should be in reg a, and 21 should be in reg d.
+; just gonna check with iout
+sw 63 a 
+iout
+sw 63 d 
+iout

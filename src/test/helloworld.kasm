@@ -1,0 +1,5 @@
+; Hello World Program
+; By TeleKiwi, the dev of KASM
+
+lda 63 "Hello, World!"
+iout

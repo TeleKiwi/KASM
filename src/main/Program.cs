@@ -110,10 +110,10 @@ namespace main
                         Commands.lw(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
                         break;
                     case "sw":
-                        Commands.sw(currentLine.Split(' ')[1], currentLine.Split(' ')[2], Int16.Parse(currentLine.Split(' ')[3]));
+                        Commands.sw(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
                         break;
                     case "lda":
-                        Commands.lda(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        Commands.lda(currentLine.Split(' ')[1], HelperMethods.stringBetweenChars(currentLine, '"', '"'));
                         break;
                     case "add":
                         Commands.add(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
@@ -123,6 +123,15 @@ namespace main
                         break;
                     case "sub":
                         Commands.sub(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        break;
+                    case "cmp":
+                        Commands.cmp(currentLine.Split(' ')[1], currentLine.Split(' ')[2], currentLine.Split(' ')[3]);
+                        break;
+                    case "ioin":
+                        Commands.ioin(currentLine.Split(' ')[1]);
+                        break;
+                    case "iout":
+                        Commands.iout();
                         break;
                     default:
                         Error.throwError(5, i);
@@ -173,20 +182,32 @@ namespace main
             Compiler.registers[reg] = Compiler.ram[donor];
         }
 
-        // stores register's content into ram at address, optionally clears the register
-        public static void sw(string destination, string donor, int clearReg) {
+        // stores register's content into ram at address
+        public static void sw(string destination, string donor) {
             int reg = HelperMethods.findRegister(donor);
             int destInRAM = Int16.Parse(destination);
+            if(destInRAM == 62) {Error.throwError(12, Compiler.i);}
 
             Compiler.ram[destInRAM] = Compiler.registers[reg];
-            if(clearReg == 0) {Compiler.registers[reg] = "";}
+            try {
+                Compiler.registers[reg] = "";
+            } catch(System.Exception) {
+                Error.throwError(13, Compiler.i);
+            }
+            
         }
 
         // loads input into ram
         public static void lda(string destination, string input) {
             int destInRAM = Int16.Parse(destination);
+            if(destInRAM == 62) {Error.throwError(12, Compiler.i);}
 
-            Compiler.ram[destInRAM] = input;
+            try {
+                Compiler.ram[destInRAM] = input;
+            } catch(System.Exception) {
+                Error.throwError(13, Compiler.i);
+            }
+            
         }
 
         // adds value to register
@@ -215,6 +236,37 @@ namespace main
             regValue -= subbed;
 
             Compiler.registers[reg] = Convert.ToString(regValue);
+        }
+
+        // compares a register with the input, stores the result in the second register
+        public static void cmp(string register, string thingToCompare, string destReg) {
+            int reg = HelperMethods.findRegister(register);
+            int reg2 = HelperMethods.findRegister(destReg);
+            int regValue = Int16.Parse(Compiler.registers[reg]);
+            int val = Int16.Parse(thingToCompare);
+            
+
+            if(regValue == val) {
+                Compiler.registers[reg2] = "0";
+            } else if(regValue >= val) {
+                Compiler.registers[reg2] = "1";
+            } else if(regValue <= val) {
+                Compiler.registers[reg2] = "2";
+            }
+
+
+        }
+
+        // stores what is in ram slot 63 in memory
+        public static void ioin(string register) {
+            int reg = HelperMethods.findRegister(register);
+            Compiler.registers[reg] = Compiler.ram[62];
+        }
+
+        // prints what is in ram slot 64 to the standard i/o stream
+        public static void iout() {
+            Console.WriteLine(Compiler.ram[63]);
+
         }
 
     }
@@ -265,6 +317,13 @@ namespace main
                 case 11:
                     Console.WriteLine("cannot move to the same register you start from.");
                     break;
+                case 12:
+                    Console.WriteLine("cannot overwrite i/o in stream.");
+                    break;
+                case 13:
+                    Console.WriteLine("Invalid index given.");
+                    break;
+                
 
             }
             Console.WriteLine($"process halted with error code {errorCode}.");
