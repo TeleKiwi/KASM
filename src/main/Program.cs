@@ -39,6 +39,23 @@ namespace main
             return true;
         return false;
         }
+
+        public static int findRegister(string reg) {
+            switch(reg.ToLower()) {
+                case "a":
+                    return 0;
+                case "b":
+                    return 1;
+                case "c":
+                    return 2;
+                case "d":
+                    return 3;
+                default:
+                    Error.throwError(10, Compiler.i);
+                    break;
+            }
+            return -1;
+        }
     }
 
     class Compiler
@@ -98,6 +115,15 @@ namespace main
                     case "lda":
                         Commands.lda(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
                         break;
+                    case "add":
+                        Commands.add(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        break;
+                    case "adc":
+                        Commands.adc(currentLine.Split(' ')[1], currentLine.Split(' ')[2], currentLine.Split(' ')[3]);
+                        break;
+                    case "sub":
+                        Commands.sub(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        break;
                     default:
                         Error.throwError(5, i);
                         break;
@@ -132,8 +158,8 @@ namespace main
 
         // moves data from 1 register to another
         public static void mw(string donor, string recipient) {
-            int reg1 = Int16.Parse(donor);
-            int reg2 = Int16.Parse(recipient);
+            int reg1 = HelperMethods.findRegister(donor);
+            int reg2 = HelperMethods.findRegister(recipient);
 
             Compiler.registers[reg2] = Compiler.registers[reg1];
             Compiler.registers[reg1] = "";
@@ -141,7 +167,7 @@ namespace main
 
         // loads data from place in ram to register
         public static void lw(string placeInRAM, string recipient)  {
-            int reg = Int16.Parse(recipient);
+            int reg = HelperMethods.findRegister(recipient);
             int donor = Int16.Parse(placeInRAM);
 
             Compiler.registers[reg] = Compiler.ram[donor];
@@ -149,7 +175,7 @@ namespace main
 
         // stores register's content into ram at address, optionally clears the register
         public static void sw(string destination, string donor, int clearReg) {
-            int reg = Int16.Parse(donor);
+            int reg = HelperMethods.findRegister(donor);
             int destInRAM = Int16.Parse(destination);
 
             Compiler.ram[destInRAM] = Compiler.registers[reg];
@@ -161,6 +187,34 @@ namespace main
             int destInRAM = Int16.Parse(destination);
 
             Compiler.ram[destInRAM] = input;
+        }
+
+        // adds value to register
+        public static void add(string destination, string thingToAdd) {
+            int reg = HelperMethods.findRegister(destination);
+            int added = Int16.Parse(thingToAdd);
+            int regValue = Int16.Parse(Compiler.registers[reg]);
+
+            regValue += added;
+            
+            Compiler.registers[reg] = Convert.ToString(regValue);
+        }
+
+        // adds value to register, then adds the carry
+        public static void adc(string destination, string thingToAdd, string carry) {
+            add(destination, thingToAdd);
+            add(destination, carry);
+        }
+        
+        // subtracts the register by the value
+        public static void sub(string destination, string thingToSub) {
+            int reg = HelperMethods.findRegister(destination);
+            int subbed = Int16.Parse(thingToSub);
+            int regValue = Int16.Parse(Compiler.registers[reg]);
+
+            regValue -= subbed;
+
+            Compiler.registers[reg] = Convert.ToString(regValue);
         }
 
     }
@@ -204,6 +258,12 @@ namespace main
                     break;
                 case 9:
                     Console.WriteLine("the stack is empty; nothing to pop.");
+                    break;
+                case 10:
+                    Console.WriteLine("invalid reg name.");
+                    break;
+                case 11:
+                    Console.WriteLine("cannot move to the same register you start from.");
                     break;
 
             }
