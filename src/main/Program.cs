@@ -113,7 +113,12 @@ namespace main
                         Commands.sw(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
                         break;
                     case "lda":
-                        Commands.lda(currentLine.Split(' ')[1], HelperMethods.stringBetweenChars(currentLine, '"', '"'));
+                        if(currentLine.Split(' ')[2].Contains('"')) {
+                            Commands.lda(currentLine.Split(' ')[1], HelperMethods.stringBetweenChars(currentLine, '"', '"'));
+                        } else {
+                            Commands.lda(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        }
+                        
                         break;
                     case "add":
                         Commands.add(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
