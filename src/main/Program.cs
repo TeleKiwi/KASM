@@ -61,10 +61,11 @@ namespace main
     class Compiler
     {
         
-        static string[] code;
+        public static string[] code;
         public static string[] registers = new string[4];
         public static string[] ram = new string[64];
         public static List<string> stack = new List<string>();
+        public static List<string> currentSubroutines = new List<string>();
 
         public static int i;
 
@@ -90,9 +91,16 @@ namespace main
 
         static void Parser(string[] input) {
             stack.Clear();
-            i = 1;
-            foreach(string currentLine in input) {
+            for(i = 0; i < input.Length; i++) {
+                string currentLine = input[i];
+                if(currentLine.Contains(';')) {
+                    currentLine.Remove(currentLine.IndexOf(';')); 
+                }
+                if(currentLine.Length == 0) { continue; }
                 string opcode = currentLine.Split(' ')[0];
+                if(opcode[0] == '.') { continue; }
+                if(opcode[0] == '!') { continue; }
+                if(opcode[0] == '&') { continue; }
                 switch(opcode) {
                     case "push":
                         Commands.push(currentLine.Split(' ')[1]);
@@ -118,7 +126,6 @@ namespace main
                         } else {
                             Commands.lda(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
                         }
-                        
                         break;
                     case "add":
                         Commands.add(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
@@ -138,12 +145,23 @@ namespace main
                     case "iout":
                         Commands.iout();
                         break;
+                    case "goto":
+                        Commands.cmdgoto(currentLine.Split(' ')[1]);
+                        break;
+                    case "end":
+                        Commands.end();
+                        break;
+                    case "gosub":
+                        Commands.gosub(currentLine.Split(' ')[1]);
+                        break;
+                    case "ret":
+                        Commands.ret();
+                        break;
                     default:
                         Error.throwError(5, i);
                         break;
                     
                 }
-                i++;
             }
         } 
     }
@@ -206,7 +224,6 @@ namespace main
         public static void lda(string destination, string input) {
             int destInRAM = Int16.Parse(destination);
             if(destInRAM == 62) {Error.throwError(12, Compiler.i);}
-
             try {
                 Compiler.ram[destInRAM] = input;
             } catch(System.Exception) {
@@ -271,7 +288,28 @@ namespace main
         // prints what is in ram slot 64 to the standard i/o stream
         public static void iout() {
             Console.WriteLine(Compiler.ram[63]);
+        }
 
+        // unconditional jump to address
+        public static void cmdgoto(string func) {
+            Compiler.i = Array.IndexOf(Compiler.code, func);
+        }
+
+        // unconditional jump to address, sets up return flag too
+        public static void gosub(string func) {
+            Compiler.i = Array.IndexOf(Compiler.code, func);
+            Compiler.currentSubroutines.Add(func);
+        }
+        
+        // returns from called subroutine
+        public static void ret() {
+            Compiler.i = Compiler.currentSubroutines.IndexOf(Compiler.currentSubroutines[0]);
+            Compiler.currentSubroutines.RemoveAt(0);
+        }
+
+        // unconditional ending of program
+        public static void end() {
+            Program.Main();
         }
 
     }
@@ -299,33 +337,27 @@ namespace main
                     Console.WriteLine("an argument is empty.");
                     break;
                 case 4:
-                    Console.WriteLine("no 'main' procedure.");
-                    break;
-                case 5:
                     Console.WriteLine("unknown keyword.");
                     break;
-                case 6:
-                    Console.WriteLine("procedure is missing 'end' keyword.");
-                    break;
-                case 7:
+                case 5:
                     Console.WriteLine("the file linked is empty. double check you have the right file?");
                     break;
-                case 8:
+                case 6:
                     Console.WriteLine("the stack has a maximum size of 256.");
                     break;
-                case 9:
+                case 7:
                     Console.WriteLine("the stack is empty; nothing to pop.");
                     break;
-                case 10:
+                case 8:
                     Console.WriteLine("invalid reg name.");
                     break;
-                case 11:
+                case 9:
                     Console.WriteLine("cannot move to the same register you start from.");
                     break;
-                case 12:
+                case 10:
                     Console.WriteLine("cannot overwrite i/o in stream.");
                     break;
-                case 13:
+                case 11:
                     Console.WriteLine("Invalid index given.");
                     break;
                 

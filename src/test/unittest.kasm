@@ -15,3 +15,25 @@ sw 63 a
 iout
 sw 63 d 
 iout
+; subroutine testing
+gosub &subroutine
+; loop testing
+; this program simply counts up
+.loop
+lda 0 1 
+lw 0 a 
+lw 0 b
+add a 1 
+add b 1 ; inline comment test
+sw 63 a 
+mw b a
+iout
+goto .loop
+end
+
+
+&subroutine
+lda 63 "Hello, World!"
+iout
+ret 
+
