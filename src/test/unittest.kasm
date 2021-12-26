@@ -16,12 +16,13 @@ iout
 sw 63 d 
 iout
 ; subroutine testing
-gosub &subroutine
+jsr &helloworld
+end
 
 
 
 &helloworld
-    lda 63 "Hello, World!"
-    iout
+lda 63 "Hello, World!"
+iout
 ret 
 

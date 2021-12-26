@@ -1,6 +1,8 @@
 ; prints the text you input.
 .main
-ioin a
-sw 64 a
+ioin 
+lw 62 a
+sw 63 a
 iout
-goto .main
+jmp .main
+end

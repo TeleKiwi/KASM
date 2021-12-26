@@ -31,3 +31,25 @@ Still in the command prompt, navigate to src/main. Then, run;
 `csc Program.cs`
 
 An executable should (hopefully) be generated. Run it. Then, when you see the prompt (`> `), paste the directory of your KASM file. (It must end in .kasm, or you'll get an error. Also, don't surround the path with quotation marks.) It should get interpreted!
+
+## Features
+
+(/) - implemented
+(-) - not implemented
+
+(/) Stack, RAM, registers
+(/) Basic I/O (iout & ioin)
+(/) Stack manip (push & pop)
+(/) Basic arithmatic (add, sub)
+(/) Branching and subroutines (jmp, jsr)
+(/) Comments
+(/) Inline comments
+(/) Looping
+(-) Subroutines with arguments
+(-) Conditional branching (jmp...if)
+(-) Macros (@define test 1)
+
+## Planned shit
+
+Turing completeness (via rule 110)
+Self compiling compiler (LMAO)

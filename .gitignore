@@ -1,0 +1,4 @@
+.vscode
+src/main/bin
+src/main/obj
+src/main/main.csproj

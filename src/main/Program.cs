@@ -22,23 +22,23 @@ namespace main
     class HelperMethods
     {
         public static string stringBetweenChars(string input, char charFrom, char charTo) {
-        int posFrom = input.IndexOf(charFrom);
-        if (posFrom != -1) { // if found char
-        
-            int posTo = input.IndexOf(charTo, posFrom + 1);
-            if (posTo != -1) { // if found char
+            int posFrom = input.IndexOf(charFrom);
+            if (posFrom != -1) { // if found char
             
-                return input.Substring(posFrom + 1, posTo - posFrom - 1);
+                int posTo = input.IndexOf(charTo, posFrom + 1);
+                if (posTo != -1) { // if found char
+                
+                    return input.Substring(posFrom + 1, posTo - posFrom - 1);
+                }
             }
-        }
-        return string.Empty;
+            return string.Empty;
         }
 
         public static bool IsTextFileEmpty(string fileName) {
-        var info = new FileInfo(fileName);
-        if (info.Length == 0)
-            return true;
-        return false;
+            var info = new FileInfo(fileName);
+            if (info.Length == 0)
+                return true;
+            return false;
         }
 
         public static int findRegister(string reg) {
@@ -52,7 +52,7 @@ namespace main
                 case "d":
                     return 3;
                 default:
-                    Error.throwError(10, Compiler.i);
+                    Error.throwError(8, Compiler.i);
                     break;
             }
             return -1;
@@ -78,7 +78,7 @@ namespace main
         static void Locate(string input) {
             try {
                 if(HelperMethods.IsTextFileEmpty(input)) {
-                    Error.throwError(7, 0);
+                    Error.throwError(5, 0);
                 }
                 code = File.ReadAllLines(input);
                 if(Path.GetExtension(input) != ".kasm") {
@@ -141,19 +141,19 @@ namespace main
                         Commands.cmp(currentLine.Split(' ')[1], currentLine.Split(' ')[2], currentLine.Split(' ')[3]);
                         break;
                     case "ioin":
-                        Commands.ioin(currentLine.Split(' ')[1]);
+                        Commands.ioin();
                         break;
                     case "iout":
                         Commands.iout();
                         break;
-                    case "goto":
-                        Commands.cmdgoto(currentLine.Split(' ')[1]);
+                    case "jmp":
+                        Commands.jmp(currentLine.Split(' ')[1]);
                         break;
                     case "end":
                         Commands.end();
                         break;
-                    case "gosub":
-                        Commands.gosub(currentLine.Split(' ')[1]);
+                    case "jsr":
+                        Commands.jsr(currentLine.Split(' ')[1]);
                         break;
                     case "ret":
                         Commands.ret();
@@ -176,9 +176,9 @@ namespace main
                 registers[i] = "";
             }
             i = 0;
-            
         }
     }
+            
 
     class Commands
     {
@@ -187,7 +187,7 @@ namespace main
             if(Compiler.stack.Count <= 256) {
                 Compiler.stack.Add(item);
             } else {
-                Error.throwError(8, Compiler.i);
+                Error.throwError(6, Compiler.i);
             }
             
         }
@@ -197,7 +197,7 @@ namespace main
             try {
                 Compiler.stack.RemoveAt(0);
             } catch(System.Exception) {
-                Error.throwError(9, Compiler.i);
+                Error.throwError(7, Compiler.i);
             }
             
         }
@@ -223,13 +223,13 @@ namespace main
         public static void sw(string destination, string donor) {
             int reg = HelperMethods.findRegister(donor);
             int destInRAM = Int16.Parse(destination);
-            if(destInRAM == 62) {Error.throwError(12, Compiler.i);}
+            if(destInRAM == 62) {Error.throwError(10, Compiler.i);}
 
             Compiler.ram[destInRAM] = Compiler.registers[reg];
             try {
                 Compiler.registers[reg] = "";
             } catch(System.Exception) {
-                Error.throwError(13, Compiler.i);
+                Error.throwError(9, Compiler.i);
             }
             
         }
@@ -237,11 +237,11 @@ namespace main
         // loads input into ram
         public static void lda(string destination, string input) {
             int destInRAM = Int16.Parse(destination);
-            if(destInRAM == 62) {Error.throwError(12, Compiler.i);}
+            if(destInRAM == 62) {Error.throwError(10, Compiler.i);}
             try {
                 Compiler.ram[destInRAM] = input;
             } catch(System.Exception) {
-                Error.throwError(13, Compiler.i);
+                Error.throwError(11, Compiler.i);
             }
             
         }
@@ -294,7 +294,7 @@ namespace main
         }
 
         // takes input and stores it in $63
-        public static void ioin(string register) {
+        public static void ioin() {
             Console.Write("> ");
             string tempinp = Console.ReadLine();
             Compiler.ram[62] = tempinp;
@@ -306,19 +306,23 @@ namespace main
         }
 
         // unconditional jump to address
-        public static void cmdgoto(string func) {
+        public static void jmp(string func) {
             Compiler.i = Array.IndexOf(Compiler.code, func);
         }
 
         // unconditional jump to address, sets up return flag too
-        public static void gosub(string func) {
-            Compiler.i = Array.IndexOf(Compiler.code, func);
+        public static void jsr(string func) {
+            jmp(func);
             Compiler.currentSubroutines.Add(func);
         }
         
         // returns from called subroutine
         public static void ret() {
-            Compiler.i = Compiler.currentSubroutines.IndexOf(Compiler.currentSubroutines[0]);
+            try {
+                Compiler.i = Array.IndexOf(Compiler.code, $"jsr {Compiler.currentSubroutines[0]}");
+            } catch(System.ArgumentOutOfRangeException) {
+                Error.throwError(12, Compiler.i);
+            }
             Compiler.currentSubroutines.RemoveAt(0);
         }
 
@@ -333,6 +337,7 @@ namespace main
     class Error
     {
         public static void throwError(int errorCode, int lineNumber) {
+            lineNumber++;
             Console.ForegroundColor = ConsoleColor.DarkRed;
             if(lineNumber != 0) {
                 Console.Write($"FATAL ERROR ON LINE {lineNumber}: ");
@@ -373,7 +378,10 @@ namespace main
                     Console.WriteLine("cannot overwrite i/o in stream.");
                     break;
                 case 11:
-                    Console.WriteLine("Invalid index given.");
+                    Console.WriteLine("invalid index given.");
+                    break;
+                case 12:
+                    Console.WriteLine("couldn't find subroutine to return to.");
                     break;
                 
 
