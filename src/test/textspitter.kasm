@@ -1,0 +1,6 @@
+; prints the text you input.
+.main
+ioin a
+sw 64 a
+iout
+goto .main

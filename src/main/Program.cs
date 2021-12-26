@@ -13,6 +13,7 @@ namespace main
                 Console.Write("> ");
                 string input = Console.ReadLine();
                 Compiler.Compile(input);
+                Compiler.Reset();
             }
             
         }
@@ -164,6 +165,19 @@ namespace main
                 }
             }
         } 
+
+        public static void Reset() {
+            stack.Clear();
+            currentSubroutines.Clear();
+            for(i = 0; i < ram.Length; i++) {
+                ram[i] = "";
+            }
+            for(i = 0; i < registers.Length; i++) {
+                registers[i] = "";
+            }
+            i = 0;
+            
+        }
     }
 
     class Commands
@@ -279,10 +293,11 @@ namespace main
 
         }
 
-        // stores what is in ram slot 63 in memory
+        // takes input and stores it in $63
         public static void ioin(string register) {
-            int reg = HelperMethods.findRegister(register);
-            Compiler.registers[reg] = Compiler.ram[62];
+            Console.Write("> ");
+            string tempinp = Console.ReadLine();
+            Compiler.ram[62] = tempinp;
         }
 
         // prints what is in ram slot 64 to the standard i/o stream
