@@ -1,0 +1,18 @@
+; simply adds two numbers of the user's choosing. forever.
+.main
+; input 1
+lda 63 "First number."
+iout
+ioin
+; input 2
+lw 62 a
+lda 63 "Second number."
+iout
+ioin
+lw 62 b
+; adding
+add a b
+sw 63 a 
+iout
+jmp .main
+end

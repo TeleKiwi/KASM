@@ -8,7 +8,6 @@ namespace main
     {
         public static void Main() {
             Console.Title = "KASM Interpreter";
-
             while(true) {
                 Console.Write("> ");
                 string input = Console.ReadLine();
@@ -102,6 +101,9 @@ namespace main
                 if(opcode[0] == '.') { continue; }
                 if(opcode[0] == '!') { continue; }
                 if(opcode[0] == '&') { continue; }
+                /* if(currentLine.Split(' ')[3] == "if") {
+                    Commands.comif(currentLine);
+                } */
                 switch(opcode) {
                     case "push":
                         Commands.push(currentLine.Split(' ')[1]);
@@ -249,7 +251,20 @@ namespace main
         // adds value to register
         public static void add(string destination, string thingToAdd) {
             int reg = HelperMethods.findRegister(destination);
-            int added = Int16.Parse(thingToAdd);
+            int added;
+            switch(thingToAdd) {
+                case "a":
+                case "b":
+                case "c":
+                case "d":
+                    int tempReg = HelperMethods.findRegister(thingToAdd);
+                    added = Int16.Parse(Compiler.registers[tempReg]);
+                    break;
+                default:
+                    added = Int16.Parse(thingToAdd);
+                    break;
+            }
+            
             int regValue = Int16.Parse(Compiler.registers[reg]);
 
             regValue += added;
@@ -315,6 +330,15 @@ namespace main
             jmp(func);
             Compiler.currentSubroutines.Add(func);
         }
+
+        // unconditional jump to address at the top of the stack
+        public static void jfs() {
+            try {
+                jmp(Compiler.stack[0]);
+            } catch(System.ArgumentException) {
+                Error.throwError(13, Compiler.i);
+            }
+        }
         
         // returns from called subroutine
         public static void ret() {
@@ -330,6 +354,18 @@ namespace main
         public static void end() {
             Program.Main();
         }
+
+        // if statement
+        /* public static void comif(string line) {
+            string[] segments = line.Split(' ');
+            string successOp = segments[0];
+            try{
+                HelperMethods.findRegister(segments[3]);
+            } catch(System.ArgumentException) {
+                Error.throwError(14, Compiler.i);
+            }
+
+        } */
 
     }
 
@@ -382,6 +418,15 @@ namespace main
                     break;
                 case 12:
                     Console.WriteLine("couldn't find subroutine to return to.");
+                    break;
+                case 13:
+                    Console.WriteLine("can't jump to address; not a valid pointer.");
+                    break;
+                case 14:
+                    Console.WriteLine("argument 1 of an if statement MUST be a register.");
+                    break;
+                default:
+                    Console.WriteLine("couldn't find description for this error. please make an issue on github with your code.");
                     break;
                 
 
