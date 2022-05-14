@@ -11,7 +11,11 @@ lw 1 a
 sub a 16
 ; now 1 should be in reg a, and 21 should be in reg d.
 ; just gonna check with iout
+lda 63 "Expected output; 1"
+iout
 sw 63 a 
+iout
+lda 63 "Expected output; 21"
 iout
 sw 63 d 
 iout
