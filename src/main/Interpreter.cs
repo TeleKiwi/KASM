@@ -38,18 +38,19 @@ namespace main
             stack.Clear();
             for(i = 0; i < input.Length; i++) {
                 string currentLine = input[i];
+                string[] tokens = currentLine.Split(' ');
                 if(currentLine.Contains(';')) {
                     currentLine.Remove(currentLine.IndexOf(';')); 
                 }
                 if(currentLine.Length == 0) { continue; }
-                string opcode = currentLine.Split(' ')[0];
+                string opcode = tokens[0];
                 if(opcode[0] == '.' || opcode[0] == '!' || opcode[0] == '&') { continue; } // skip if it's a 
-                /* if(currentLine.Split(' ')[3] == "if") {
+                /* if(tokens[3] == "if") {
                     Commands.comif(currentLine);
                 } */
                 switch(opcode) {
                     case "push":
-                        Commands.push(currentLine.Split(' ')[1]);
+                        Commands.push(tokens[1]);
                         break;
                     case "pop":
                         Commands.pop();
@@ -58,32 +59,32 @@ namespace main
                         break;
                     }
                     case "mw":
-                        Commands.mw(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        Commands.mw(tokens[1], tokens[2]);
                         break;
                     case "lw":
-                        Commands.lw(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        Commands.lw(tokens[1], tokens[2]);
                         break;
                     case "sw":
-                        Commands.sw(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        Commands.sw(tokens[1], tokens[2]);
                         break;
                     case "lda":
-                        if(currentLine.Split(' ')[2].Contains('"')) {
-                            Commands.lda(currentLine.Split(' ')[1], HelperMethods.stringBetweenChars(currentLine, '"', '"'));
+                        if(tokens[2].Contains('"')) {
+                            Commands.lda(tokens[1], HelperMethods.stringBetweenChars(currentLine, '"', '"'));
                         } else {
-                            Commands.lda(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                            Commands.lda(tokens[1], tokens[2]);
                         }
                         break;
                     case "add":
-                        Commands.add(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        Commands.add(tokens[1], tokens[2]);
                         break;
                     case "adc":
-                        Commands.adc(currentLine.Split(' ')[1], currentLine.Split(' ')[2], currentLine.Split(' ')[3]);
+                        Commands.adc(tokens[1], tokens[2], tokens[3]);
                         break;
                     case "sub":
-                        Commands.sub(currentLine.Split(' ')[1], currentLine.Split(' ')[2]);
+                        Commands.sub(tokens[1], tokens[2]);
                         break;
                     case "cmp":
-                        Commands.cmp(currentLine.Split(' ')[1], currentLine.Split(' ')[2], currentLine.Split(' ')[3]);
+                        Commands.cmp(tokens[1], tokens[2], tokens[3]);
                         break;
                     case "ioin":
                         Commands.ioin();
@@ -92,13 +93,16 @@ namespace main
                         Commands.iout();
                         break;
                     case "jmp":
-                        Commands.jmp(currentLine.Split(' ')[1]);
+                        Commands.jmp(tokens[1]);
                         break;
                     case "end":
                         Commands.end();
                         break;
                     case "jsr":
-                        Commands.jsr(currentLine.Split(' ')[1]);
+                        Commands.jsr(tokens[1]);
+                        break;
+                    case "jfs":
+                        Commands.jfs();
                         break;
                     case "ret":
                         Commands.ret();

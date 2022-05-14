@@ -75,8 +75,8 @@ namespace main
             Console.WriteLine($"program will continue execution. warning code {warningCode}.");
         }
 
-        public static void throwInfo(int infoCode) {
+        /* public static void throwInfo(int infoCode) {
             CLI.Main();
-        }
+        } */
     }
 }
