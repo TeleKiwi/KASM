@@ -61,4 +61,3 @@ An executable should (hopefully) be generated. Run it. Then, when you see the pr
 ## Planned shit
 
 Turing completeness (via turing machine)
-Syntax highlighting
