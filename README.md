@@ -54,13 +54,13 @@ An executable should (hopefully) be generated. Run it. Then, when you see the pr
 
 (/) Looping
 
-(-) Subroutines with arguments
+(/) Conditional branching (jnz)
 
-(-) Conditional branching (jmp...if)
+(-) Subroutines with arguments
 
 (-) Macros (@define test 1)
 
 ## Planned shit
 
-Turing completeness (via rule 110)
-Self compiling compiler (LMAO)
+Turing completeness (via turing machine)
+Syntax highlighting
