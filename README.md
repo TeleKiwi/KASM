@@ -28,25 +28,36 @@ First, make sure your computer can execute C# code. Download .NET Core from Micr
 
 Still in the command prompt, navigate to src/main. Then, run;
 
-`dotnet run`
+`dotnet run CLI.cs`
 
-An executable should (hopefully) be generated. Run it. Then, when you see the prompt (`> `), paste the directory of your KASM file. (It must end in .kasm, or you'll get an error. Also, don't surround the path with quotation marks.) It should get interpreted!
+An executable should (hopefully) be generated. Run it. Then, when you see the prompt (`>`), paste the FULL directory of your KASM file. (It must end in .kasm, or you'll get an error. Also, don't surround the path with quotation marks.) It should get interpreted!
 
 ## Features
 
 (/) - implemented
+
 (-) - not implemented
 
 (/) Stack, RAM, registers
+
 (/) Basic I/O (iout & ioin)
+
 (/) Stack manip (push & pop)
+
 (/) Basic arithmatic (add, sub)
+
 (/) Branching and subroutines (jmp, jsr, jfs)
+
 (/) Comments
+
 (/) Inline comments
+
 (/) Looping
+
 (-) Subroutines with arguments
+
 (-) Conditional branching (jmp...if)
+
 (-) Macros (@define test 1)
 
 ## Planned shit

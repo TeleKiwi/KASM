@@ -6,10 +6,10 @@ namespace main
     {
         // pushes input to stack
         public static void push(string item) {
-            if(Compiler.stack.Count <= 256) {
-                Compiler.stack.Add(item);
+            if(Interpreter.stack.Count <= 256) {
+                Interpreter.stack.Add(item);
             } else {
-                Error.throwError(6, Compiler.i);
+                Error.throwError(6, Interpreter.i);
             }
             
         }
@@ -17,9 +17,9 @@ namespace main
         // pops first input off stack
         public static void pop() {
             try {
-                Compiler.stack.RemoveAt(0);
+                Interpreter.stack.RemoveAt(0);
             } catch(System.Exception) {
-                Error.throwError(7, Compiler.i);
+                Error.throwError(7, Interpreter.i);
             }
             
         }
@@ -29,8 +29,8 @@ namespace main
             int reg1 = HelperMethods.findRegister(donor);
             int reg2 = HelperMethods.findRegister(recipient);
 
-            Compiler.registers[reg2] = Compiler.registers[reg1];
-            Compiler.registers[reg1] = "";
+            Interpreter.registers[reg2] = Interpreter.registers[reg1];
+            Interpreter.registers[reg1] = "";
         }
 
         // loads data from place in ram to register
@@ -38,20 +38,20 @@ namespace main
             int reg = HelperMethods.findRegister(recipient);
             int donor = Int16.Parse(placeInRAM);
 
-            Compiler.registers[reg] = Compiler.ram[donor];
+            Interpreter.registers[reg] = Interpreter.ram[donor];
         }
 
         // stores register's content into ram at address
         public static void sw(string destination, string donor) {
             int reg = HelperMethods.findRegister(donor);
             int destInRAM = Int16.Parse(destination);
-            if(destInRAM == 62) {Error.throwError(10, Compiler.i);}
+            if(destInRAM == 62) {Error.throwError(10, Interpreter.i);}
 
-            Compiler.ram[destInRAM] = Compiler.registers[reg];
+            Interpreter.ram[destInRAM] = Interpreter.registers[reg];
             try {
-                Compiler.registers[reg] = "";
+                Interpreter.registers[reg] = "";
             } catch(System.Exception) {
-                Error.throwError(9, Compiler.i);
+                Error.throwError(9, Interpreter.i);
             }
             
         }
@@ -59,11 +59,11 @@ namespace main
         // loads input into ram
         public static void lda(string destination, string input) {
             int destInRAM = Int16.Parse(destination);
-            if(destInRAM == 62) {Error.throwError(10, Compiler.i);}
+            if(destInRAM == 62) {Error.throwError(10, Interpreter.i);}
             try {
-                Compiler.ram[destInRAM] = input;
+                Interpreter.ram[destInRAM] = input;
             } catch(System.Exception) {
-                Error.throwError(11, Compiler.i);
+                Error.throwError(11, Interpreter.i);
             }
             
         }
@@ -78,18 +78,18 @@ namespace main
                 case "c":
                 case "d":
                     int tempReg = HelperMethods.findRegister(thingToAdd);
-                    added = Int16.Parse(Compiler.registers[tempReg]);
+                    added = Int16.Parse(Interpreter.registers[tempReg]);
                     break;
                 default:
                     added = Int16.Parse(thingToAdd);
                     break;
             }
             
-            int regValue = Int16.Parse(Compiler.registers[reg]);
+            int regValue = Int16.Parse(Interpreter.registers[reg]);
 
             regValue += added;
             
-            Compiler.registers[reg] = Convert.ToString(regValue);
+            Interpreter.registers[reg] = Convert.ToString(regValue);
         }
 
         // adds value to register, then adds the carry
@@ -102,27 +102,27 @@ namespace main
         public static void sub(string destination, string thingToSub) {
             int reg = HelperMethods.findRegister(destination);
             int subbed = Int16.Parse(thingToSub);
-            int regValue = Int16.Parse(Compiler.registers[reg]);
+            int regValue = Int16.Parse(Interpreter.registers[reg]);
 
             regValue -= subbed;
 
-            Compiler.registers[reg] = Convert.ToString(regValue);
+            Interpreter.registers[reg] = Convert.ToString(regValue);
         }
 
         // compares a register with the input, stores the result in the second register
         public static void cmp(string register, string thingToCompare, string destReg) {
             int reg = HelperMethods.findRegister(register);
             int reg2 = HelperMethods.findRegister(destReg);
-            int regValue = Int16.Parse(Compiler.registers[reg]);
+            int regValue = Int16.Parse(Interpreter.registers[reg]);
             int val = Int16.Parse(thingToCompare);
             
 
             if(regValue == val) {
-                Compiler.registers[reg2] = "0";
+                Interpreter.registers[reg2] = "0";
             } else if(regValue >= val) {
-                Compiler.registers[reg2] = "1";
+                Interpreter.registers[reg2] = "1";
             } else if(regValue <= val) {
-                Compiler.registers[reg2] = "2";
+                Interpreter.registers[reg2] = "2";
             }
 
 
@@ -132,42 +132,42 @@ namespace main
         public static void ioin() {
             Console.Write("> ");
             string tempinp = Console.ReadLine();
-            Compiler.ram[62] = tempinp;
+            Interpreter.ram[62] = tempinp;
         }
 
         // prints what is in ram slot 64 to the standard i/o stream
         public static void iout() {
-            Console.WriteLine(Compiler.ram[63]);
+            Console.WriteLine(Interpreter.ram[63]);
         }
 
         // unconditional jump to address
         public static void jmp(string func) {
-            Compiler.i = Array.IndexOf(Compiler.code, func);
+            Interpreter.i = Array.IndexOf(Interpreter.code, func);
         }
 
         // unconditional jump to address, sets up return flag too
         public static void jsr(string func) {
             jmp(func);
-            Compiler.currentSubroutines.Add(func);
+            Interpreter.currentSubroutines.Add(func);
         }
 
         // unconditional jump to address at the top of the stack
         public static void jfs() {
             try {
-                jmp(Compiler.stack[0]);
+                jmp(Interpreter.stack[0]);
             } catch(System.ArgumentException) {
-                Error.throwError(13, Compiler.i);
+                Error.throwError(13, Interpreter.i);
             }
         }
         
         // returns from called subroutine
         public static void ret() {
             try {
-                Compiler.i = Array.IndexOf(Compiler.code, $"jsr {Compiler.currentSubroutines[0]}");
+                Interpreter.i = Array.IndexOf(Interpreter.code, $"jsr {Interpreter.currentSubroutines[0]}");
             } catch(System.ArgumentOutOfRangeException) {
-                Error.throwError(12, Compiler.i);
+                Error.throwError(12, Interpreter.i);
             }
-            Compiler.currentSubroutines.RemoveAt(0);
+            Interpreter.currentSubroutines.RemoveAt(0);
         }
 
         // unconditional ending of program
@@ -182,7 +182,7 @@ namespace main
             try{
                 HelperMethods.findRegister(segments[3]);
             } catch(System.ArgumentException) {
-                Error.throwError(14, Compiler.i);
+                Error.throwError(14, Interpreter.i);
             }
 
         } */

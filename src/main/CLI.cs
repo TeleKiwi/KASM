@@ -9,8 +9,8 @@ namespace main
             while(true) {
                 Console.Write("> ");
                 string input = Console.ReadLine();
-                Compiler.Compile(input);
-                Compiler.Reset();
+                Interpreter.Interpret(input);
+                Interpreter.Reset();
             }
             
         }

@@ -35,7 +35,7 @@ namespace main
                 case "d":
                     return 3;
                 default:
-                    Error.throwError(8, Compiler.i);
+                    Error.throwError(8, Interpreter.i);
                     break;
             }
             return -1;

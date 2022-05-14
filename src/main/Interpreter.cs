@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace main
 {
-    class Compiler
+    class Interpreter
     {
         
         public static string[] code;
@@ -14,7 +14,7 @@ namespace main
 
         public static int i;
 
-        public static void Compile(string input) {
+        public static void Interpret(string input) {
             Locate(input);
             Parser(code);
         }
@@ -43,9 +43,7 @@ namespace main
                 }
                 if(currentLine.Length == 0) { continue; }
                 string opcode = currentLine.Split(' ')[0];
-                if(opcode[0] == '.') { continue; }
-                if(opcode[0] == '!') { continue; }
-                if(opcode[0] == '&') { continue; }
+                if(opcode[0] == '.' || opcode[0] == '!' || opcode[0] == '&') { continue; } // skip if it's a 
                 /* if(currentLine.Split(' ')[3] == "if") {
                     Commands.comif(currentLine);
                 } */
