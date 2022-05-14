@@ -1,0 +1,3 @@
+; uses jnz to prove that kasm is turing complete
+.main
+; take in command

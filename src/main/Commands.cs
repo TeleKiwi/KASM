@@ -175,17 +175,14 @@ namespace main
             CLI.Main();
         }
 
-        // if statement
-        /* public static void comif(string line) {
-            string[] segments = line.Split(' ');
-            string successOp = segments[0];
-            try{
-                HelperMethods.findRegister(segments[3]);
-            } catch(System.ArgumentException) {
-                Error.throwError(14, Interpreter.i);
-            }
+        // jump if register selected isn't 0
+        public static void jnz(string register, string func) {
+            int reg = HelperMethods.findRegister(register);
 
-        } */
+            if(Interpreter.registers[reg] != "0") {
+                jmp(func);
+            }
+        }
 
     }
 
