@@ -30,7 +30,7 @@ Still in the command prompt, navigate to src/main. Then, run;
 
 `dotnet run CLI.cs`
 
-An executable should (hopefully) be generated. Run it. Then, when you see the prompt (`>`), paste the FULL directory of your KASM file. (It must end in .kasm, or you'll get an error. Also, don't surround the path with quotation marks.) It should get interpreted!
+When you see the prompt (`>`), paste the FULL directory of your KASM file. (It must end in .kasm, or you'll get an error. Also, don't surround the path with quotation marks.) It should get interpreted!
 
 ## Features
 

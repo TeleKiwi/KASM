@@ -44,10 +44,7 @@ namespace main
                 }
                 if(currentLine.Length == 0) { continue; }
                 string opcode = tokens[0];
-                if(opcode[0] == '.' || opcode[0] == '!' || opcode[0] == '&') { continue; } // skip if it's a 
-                /* if(tokens[3] == "if") {
-                    Commands.comif(currentLine);
-                } */
+                if(opcode[0] == '.' || opcode[0] == '!' || opcode[0] == '&') { continue; } 
                 switch(opcode) {
                     case "push":
                         Commands.push(tokens[1]);
